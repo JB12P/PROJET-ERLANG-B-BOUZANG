@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Calcul Erlang B</title>
+<style>
+    body { font-family: Arial; padding: 20px; }
+    table { border-collapse: collapse; margin-top: 15px; }
+    th, td { border: 1px solid black; padding: 5px 10px; text-align: center; }
+</style>
+</head>
+
+<body>
+
+<h2>Outil de calcul du nombre de canaux (Erlang B)</h2>
+
+<!-- Saisie des données -->
+<label>Trafic A :</label>
+<input type="number" id="A" value="30"><br><br>
+
+<label>Probabilité max de rejet Pr (%) :</label>
+<input type="number" id="Pr" value="2"><br><br>
+
+
+<button onclick="calculer()">Calculer</button>
+
+<h3 id="resultat"></h3>
+
+<table>
+<thead>
+<tr>
+<th>N</th>
+<th>Probabilité de rejet</th>
+</tr>
+</thead>
+<tbody id="tableau"></tbody>
+</table>
+
+<script>
+// =============================
+// Fonction Erlang B
+// =============================
+function erlangB(N, A) {
+    let numerateur = 1;
+
+    // calcul A^N / N!
+    for (let i = 1; i <= N; i++) {
+        numerateur *= A / i;
+    }
+
+    let denominateur = 1;
+    let terme = 1;
+
+    // somme des termes de k=0 à N
+    for (let k = 1; k <= N; k++) {
+        terme *= A / k;
+        denominateur += terme;
+    }
+
+    return numerateur / denominateur;
+}
+
+// =============================
+// Programme principal
+// =============================
+function calculer() {
+    let A = parseFloat(document.getElementById("A").value);
+    let Pr = parseFloat(document.getElementById("Pr").value) / 100;
+
+
+    let N = 0;
+    let Proba = 1;
+
+    let tableau = document.getElementById("tableau");
+    tableau.innerHTML = ""; // vider tableau
+
+    // Tant que la proba est > Pr
+    do {
+        N++;
+        Proba = erlangB(N, A);
+
+        // Ajouter ligne au tableau
+        let ligne = "<tr><td>" + N + "</td><td>" + Proba.toFixed(6)*100 + "</td></tr>";
+        tableau.innerHTML += ligne;
+
+    } while (Proba > Pr);
+
+    document.getElementById("resultat").innerText =
+        "Nombre minimal de canaux nécessaires : N = " + N +
+        " (Probabilité = " + Proba.toFixed(6)*100 + ")";
+}
+</script>
+<h6>Proposer par JOEL BOUZANG, etudiant en M1 ENSPD/GRT</h6>
+<h6>Sous l'encadrement de Dr. Ing. Carlos KONLACK</h6>
+</body>
+</html>
